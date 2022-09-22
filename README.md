@@ -9,9 +9,9 @@ The mysh program provides a subset of the functionality provided by common Linux
   The shell can run an interactive login screen, when accessed a client can access one or more user accounts. 
   
 # Shell IO
-  {cmd | arg |} &  - Command Runs in the Background.
-  {cmd | arg } | {cmd | arg} | ... - Connects procedually two or more processes
-  {cmd | arg < } [V] { cmd | arg > } [V] ... - Allows for user defined redirected output : subset of redirection functionality to be extended
-  Users can access any external command from the mysh system directly via absoulute pathname that can be found via a search (tab) extention.
-  
-  We also made some fun signals like Ctrl + C to end a current proccess, continue, pause and kill process commands. 
+  {cmd | arg |} &  - Command Runs in the Background. \
+  {cmd | arg } | {cmd | arg} | ... - Connects procedually two or more processes. \
+  {cmd | arg < } [V] { cmd | arg > } [V] ... - Allows for user defined redirected output : subset of redirection functionality to be extended. \
+  Users can access any external command from the mysh system directly via absoulute pathname that can be found via a search (tab) extention. \
+  \
+  We also made some fun signals like Ctrl + C to end a current proccess, continue, pause and kill process commands.\

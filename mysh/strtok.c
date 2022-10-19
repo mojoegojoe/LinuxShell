@@ -2,6 +2,8 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
 char *strtok(char *str, const char *delim);
 void get_args(char * str, char **arg_buffer,int arg_buffer_size);
@@ -10,6 +12,7 @@ int command_handler(char **commands,int commands_size, char **arg_buffer, int ar
 int strcmp(char *str1, char *str2);
 void clear_rest(char ** buff, int buff_size, int index);
 void copy_starting(char **buff, char **buff2, int index);
+void exec_ioredir(char ** arg_buff, char ** command_buff);
 
 #define  BUFF_SIZE 30
 #define  COMMAND_SIZE 4
@@ -35,12 +38,11 @@ int main(){
     pid = fork();
     get_args(input_buff,arg_buff,BUFF_SIZE);
     command = command_handler(commands, COMMAND_SIZE, arg_buff, BUFF_SIZE,command_buff);
-    for(int i = 0; i < BUFF_SIZE; i++){
-      printf("this is %s\n", command_buff[i]);
-
-
-    }
+  
     if(pid == 0){
+      if(command == 3){
+	exec_ioredir(arg_buff, command_buff);  
+      }
       execve(arg_buff[0],arg_buff,NULL);
     }
     //if command(&) is given to run in background, dont wait
@@ -56,14 +58,24 @@ int main(){
 
 //TO DO: EXECUTE io redirection
 
-/*
+
 void exec_ioredir(char **arg_buff, char ** command_buff){
-*
+
+  if(strcmp(command_buff[0], ">") == 0){
+    int fd = open(command_buff[1], O_WRONLY| O_CREAT, S_IRWXU);
+    dup2(fd,1);
+    close(fd);
+  }
+  else if(strcmp(command_buff[0], "<") == 0 ){
+    int fd = open(command_buff[1], O_RDONLY);
+    dup2(fd,0);
+    close(fd);
+  }
   
-
-
+  return;
 }
-*/
+
+
 
 
 /*
@@ -128,14 +140,13 @@ void clear_rest(char ** buff, int buff_size,int index){
 }
 
 /*
-copies content of buff into buff2 starting at an index+1
-(does not copy content within index number)
+copies content of buff into buff2 starting at an index
 
  */
 void copy_starting(char ** buff, char ** buff2, int index){
 
-  for(int i = index+1; buff[i] != NULL; i++){
-    buff2[i-(index+1)] = buff[i];
+  for(int i = index; buff[i] != NULL; i++){
+    buff2[i-index] = buff[i];
   }
   return;
 }

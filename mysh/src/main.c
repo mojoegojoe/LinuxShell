@@ -277,37 +277,33 @@ int main(int argc, char **argv)
 {
   int BUFFERSIZE = 256;
   int i;
-  char *BUFFER[BUFFERSIZE];
-  char *TEMPBUFFER[BUFFERSIZE];
-  char delim[3] = {'\n', ' ', '\0'}; // delim : 
-  // Load config files, if any.
-  read_line(&BUFFER, &delim);
+  char BUFFER[BUFFERSIZE];
+  char TEMPBUFFER[BUFFERSIZE];
+  char delim[3] = {'\n', ' ', '\0'}; // delimits the input and output from kbd 
 
-  i =  print_line(&BUFFER, &delim);
+  // tests for IO functions
+  i =  read_line(BUFFER, delim);
+
+  i =  print_line(BUFFER, delim);
 
   printf("\nPrint returned with : %d\n", i);
 
-  i = buff_cmp(&BUFFER, &BUFFER, &delim);
+  i = buff_cmp(BUFFER, BUFFER, delim);
 
   printf("\nCMP returned with : %d\n", i);
 
-  i = buff_cmp(&TEMPBUFFER, &BUFFER, &delim);
+  i = buff_cmp(TEMPBUFFER, BUFFER, delim);
 
-  printf("\nCMP returned with : %d\nWriting to error stream...\n", i);
+  printf("\nCMP returned with : %d\n", i);
 
-  str_cpy(&BUFFER, "THIS IS AN ERROR: \n\0", &delim);
+  str_cpy(BUFFER, "THIS IS AN ERROR: \n\0", delim);
 
-  print_line(&BUFFER, &delim);
+  print_line(BUFFER, delim);
+  
+  i = error_line(BUFFER, delim);
 
-  i = error_line(&BUFFER, &delim);
-
-  printf("\nErr Print returned with : %d\n", i);
-
-  // Run command loop.
-  //lsh_loop();
-
-  // Perform any shutdown/cleanup.
-
+  printf("\nERROR Line returned with : %d\nThis was due to no error flag being set\n", i);
+  lsh_loop();
   return EXIT_SUCCESS;
 }
 

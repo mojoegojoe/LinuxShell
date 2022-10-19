@@ -22,7 +22,7 @@ int main(){
   char *command_buff[BUFF_SIZE];
   pid_t pid;
   int status;
-  int command = 99;
+  int command;
   int running = 1;
   
   //test main shell loop
@@ -39,7 +39,8 @@ int main(){
       execve(arg_buff[0],arg_buff,NULL);
     }
     //if command(&) is given to run in background, dont wait
-    if(status != 2){
+    if(command != 2){
+      printf("waiting\n");
       waitpid(pid,&status,0);
     }
   }

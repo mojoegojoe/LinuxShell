@@ -5,6 +5,7 @@
 
 char *strtok(char *str, const char *delim);
 void get_args(char * str, char **arg_buffer);
+int read_input(char* buffer,int buffer_size);
 
 #define  BUFF_SIZE 30
 
@@ -21,18 +22,14 @@ int main(){
 
     //replace printf with our write function
     printf("$ ");
-
-    //replace fgets with our input function
-    if(fgets(input_buff,BUFF_SIZE,stdin) != NULL){
-      pid = fork();
-      if(pid == 0){
-	get_args(input_buff,arg_buff);
-	execve(arg_buff[0],arg_buff,NULL);
-      }
-      waitpid(pid,&status,0);
-      
+    
+    read_input(input_buff,BUFF_SIZE);
+    pid = fork();
+    if(pid == 0){
+      get_args(input_buff,arg_buff);
+      execve(arg_buff[0],arg_buff,NULL);
     }
-
+    waitpid(pid,&status,0);
   }
   return 0;
 }
@@ -48,6 +45,18 @@ TODO:
 
 
  */
+int read_input(char *buffer, int buffer_size){
+  int status;
+  
+  if(buffer == NULL){
+    status = -1;
+    return status;
+  }
+  else{
+   status = read(0,buffer,buffer_size);
+  }
+  return status;
+}
 
 /*
 Given an array of char pointers,
@@ -65,11 +74,8 @@ void get_args(char * str, char **arg_buffer){
       break;
     }
   }
-
-
   return;
 }
-
 /*
 - works the same way as strtok function
  */

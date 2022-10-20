@@ -10,22 +10,25 @@ void get_args(char * str, char **arg_buffer,int arg_buffer_size);
 int read_input(char* buffer,int buffer_size);
 int command_handler(char **commands,int commands_size, char **arg_buffer, int arg_buff_size, char ** command_buff);
 int strcmp(char *str1, char *str2);
+int bckgrnd_check(char ** arg_buff);
 void clear_rest(char ** buff, int buff_size, int index);
 void copy_starting(char **buff, char **buff2, int index);
 void exec_ioredir(char ** arg_buff, char ** command_buff);
 
+
 #define  BUFF_SIZE 30
-#define  COMMAND_SIZE 4
+#define  COMMAND_SIZE 3
 
 int main(){
 
-  char *commands [] = {"|","&","<",">"};
+  char *commands [] = {"|","<",">"};
   char input_buff[BUFF_SIZE];
   char *arg_buff[BUFF_SIZE];
   char *command_buff[BUFF_SIZE];
   pid_t pid;
   int status;
   int command;
+  int bckgrnd_flag;
   int running = 1;
   
   //test main shell loop
@@ -34,21 +37,38 @@ int main(){
     //replace printf with our write function
     //    printf("$ ");
     
-    read_input(input_buff,BUFF_SIZE);
-    pid = fork();
+    input_buff[read_input(input_buff,BUFF_SIZE)-1] = '\0';
+    //testing printf("input string : %s\n", input_buff);
     get_args(input_buff,arg_buff,BUFF_SIZE);
+
+    /* testing 
+    for(int i = 0; arg_buff[i] != NULL; i++){
+      printf("this is %s\n", arg_buff[i]);
+
+    }
+    */
+    
+    bckgrnd_flag = bckgrnd_check(arg_buff);
     command = command_handler(commands, COMMAND_SIZE, arg_buff, BUFF_SIZE,command_buff);
-  
+    /* testing
+    for(int i = 0; command_buff[i] != NULL; i++){
+      printf("this is command %s\n", command_buff[i]);
+
+    }
+    */
+      
+    pid = fork();
     if(pid == 0){
-      if(command == 3){
+      if(command == 2){
 	exec_ioredir(arg_buff, command_buff);  
       }
       execve(arg_buff[0],arg_buff,NULL);
     }
     //if command(&) is given to run in background, dont wait
-    if(command != 2){
-      printf("waiting\n");
+    if(bckgrnd_flag != 0){
+      //testing printf("waiting\n");
       waitpid(pid,&status,0);
+      //testing printf("child process terminated\n");
     }
   }
   
@@ -56,13 +76,31 @@ int main(){
   return 0;
 }
 
-//TO DO: EXECUTE io redirection
+/*
+Purpose: returns flag indicating if argument list
+contains the run in background command
 
+returns 0 if the run in backgrounds command is found
+at the end of arguments 
+
+*/
+int bckgrnd_check(char ** arg_buff){
+
+  int i = 0;
+  
+  while(arg_buff[i] != NULL){
+    i++;
+  }
+
+  return strcmp(arg_buff[i-1], "&");
+}
+
+//TO DO: EXECUTE io redirection
 
 void exec_ioredir(char **arg_buff, char ** command_buff){
 
   if(strcmp(command_buff[0], ">") == 0){
-    int fd = open(command_buff[1], O_WRONLY| O_CREAT, S_IRWXU);
+    int fd = open(command_buff[1], O_WRONLY| O_CREAT | O_TRUNC, S_IRWXU);
     dup2(fd,1);
     close(fd);
   }
@@ -75,17 +113,13 @@ void exec_ioredir(char **arg_buff, char ** command_buff){
   return;
 }
 
-
-
-
 /*
 compares command array with arg_buffer and
 returns a number based on the command detected
 
 0 = no commands
 1 = pipe
-2 = ampersand for background process
-3 = io redirection
+2 = io redirection
 
 If a command is detected, the command buffer is also filled and the
 arg buffer is modified to remove the command and its arguments
@@ -108,11 +142,8 @@ int command_handler(char **commands,int commands_size,char **arg_buffer, int buf
 	if(strcmp(commands[j],"|") == 0){
 	  status = 1;
 	}
-	else if(strcmp(commands[j],"&") == 0){
-	  status = 2;
-	}
 	else if(strcmp(commands[j],"<") == 0 || strcmp(commands[j],">") == 0){
-	  status = 3;
+	  status = 2;
 	}
 	clear_rest(arg_buffer,buff_size,i);
       }

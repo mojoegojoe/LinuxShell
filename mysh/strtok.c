@@ -196,7 +196,11 @@ void runprocess(char **arg_buff, int isBackGround)
 
 }
 
-// TO DO: EXECUTE io redirection
+/*
+Supports input and output redirection,
+output redirection with appends and
+error output redirection
+ */
 
 void exec_ioredir(char **arg_buff, char **command_buff, int bckgrnd_flag)
 {
@@ -219,7 +223,7 @@ void exec_ioredir(char **arg_buff, char **command_buff, int bckgrnd_flag)
     
     runprocess(arg_buff,bckgrnd_flag);
     
-    //restore buffer
+    //restores buffer
     dup2(saved,1);
     close(saved);
   }
@@ -248,6 +252,10 @@ void exec_ioredir(char **arg_buff, char **command_buff, int bckgrnd_flag)
 
   return;
 }
+/*
+Checks if given argument is to be run in
+the background
+*/
 
 int bckgrnd_check(char ** arg_buff){
 

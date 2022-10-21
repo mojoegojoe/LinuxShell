@@ -26,7 +26,7 @@ int bckgrnd_check(char ** arg_buff);
 
 
 #define BUFF_SIZE 80
-#define COMMAND_SIZE 5
+#define COMMAND_SIZE 6
 #define EXIT_FAILURE 1
 
 // int check_redirection(char *command)
@@ -108,7 +108,7 @@ void shell()
 
 void execute_command(char *input_buff)
 {
-  char *commands[] = {"|","<", ">","2>","&"};
+  char *commands[] = {"|","<", ">","2>",">>","&"};
   char *arg_buff[BUFF_SIZE];
   char *command_buff[BUFF_SIZE];
   //pid_t pid;
@@ -200,23 +200,33 @@ void runprocess(char **arg_buff, int isBackGround)
 
 void exec_ioredir(char **arg_buff, char **command_buff, int bckgrnd_flag)
 {
+  int fd,saved;
 
-  if (strcmp(command_buff[0], ">") == 0)
+  if (strcmp(command_buff[0], ">") == 0 || strcmp(command_buff[0], ">>") == 0)
   {
-    int saved = dup(1);
-    int fd = open(command_buff[1], O_WRONLY | O_CREAT | O_TRUNC, S_IRWXU);
+    saved = dup(1);
+    if(strcmp(command_buff[0], ">") == 0)
+    {
+      fd = open(command_buff[1], O_WRONLY | O_CREAT | O_TRUNC, S_IRWXU);
+    }
+    else
+    {
+      fd = open(command_buff[1], O_WRONLY | O_CREAT | O_APPEND, S_IRWXU);
+    }
+	
     dup2(fd, 1);
     close(fd);
     
     runprocess(arg_buff,bckgrnd_flag);
+    
     //restore buffer
     dup2(saved,1);
     close(saved);
   }
   else if (strcmp(command_buff[0], "<") == 0)
   {
-    int saved = dup(0);
-    int fd = open(command_buff[1], O_RDONLY);
+    saved = dup(0);
+    fd = open(command_buff[1], O_RDONLY);
     dup2(fd, 0);
     close(fd);
 
@@ -226,8 +236,8 @@ void exec_ioredir(char **arg_buff, char **command_buff, int bckgrnd_flag)
   }
   else if(strcmp(command_buff[0], "2>") == 0)
   {
-    int saved = dup(2);
-    int fd = open(command_buff[1], O_WRONLY | O_CREAT | O_TRUNC, S_IRWXU);
+    saved = dup(2);
+    fd = open(command_buff[1], O_WRONLY | O_CREAT | O_TRUNC, S_IRWXU);
     dup2(fd, 2);
     close(fd);
 
@@ -359,7 +369,7 @@ int command_handler(char **commands, int commands_size, char **arg_buffer, int b
           status = 1;
         }
         else if (strcmp(commands[j], "<") == 0 || strcmp(commands[j], ">") == 0
-		 || strcmp(commands[j], "2>") == 0)
+		 || strcmp(commands[j], "2>") == 0 || strcmp(commands[j], ">>") == 0)
         {
           status = 2;
         }

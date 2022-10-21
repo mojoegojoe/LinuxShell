@@ -41,7 +41,7 @@ char **pipe_elements(char *input);
 void piping(char *command);
 
 #define BUFF_SIZE 80
-#define COMMAND_SIZE 4
+#define COMMAND_SIZE 6
 #define EXIT_FAILURE 1
 #define HOME "/home/soren"
 #define BUFFERSIZE 256
@@ -225,7 +225,7 @@ void shell()
 
 void execute_command(char *input_buff)
 {
-  char *commands[] = {"|","<", ">", "&"};
+  char *commands[] = {"|","<", ">","2>",">>","&"};
   char *arg_buff[BUFF_SIZE];
   char *command_buff[BUFF_SIZE];
 
@@ -325,26 +325,56 @@ void runprocess(char **arg_buff, int isBackGround)
   }
 }
 
+<<<<<<< HEAD
 // TO DO: EXECUTE io redirection
+=======
+/*
+Supports input and output redirection,
+output redirection with appends and
+error output redirection
+ */
+
+>>>>>>> 05a9a5de854ae8d9ceacf39f6a5ca63d5310014f
 void exec_ioredir(char **arg_buff, char **command_buff, int bckgrnd_flag)
 {
+  int fd,saved;
 
-  if (strcmp(command_buff[0], ">") == 0)
+  if (strcmp(command_buff[0], ">") == 0 || strcmp(command_buff[0], ">>") == 0)
   {
-    int saved = dup(1);
-    int fd = open(command_buff[1], O_WRONLY | O_CREAT | O_TRUNC, S_IRWXU);
+    saved = dup(1);
+    if(strcmp(command_buff[0], ">") == 0)
+    {
+      fd = open(command_buff[1], O_WRONLY | O_CREAT | O_TRUNC, S_IRWXU);
+    }
+    else
+    {
+      fd = open(command_buff[1], O_WRONLY | O_CREAT | O_APPEND, S_IRWXU);
+    }
+
+    if(fd == -1)
+    {
+      perror("File failed to open"\n);
+      exit(EXIT_FAILURE);
+    }
     dup2(fd, 1);
     close(fd);
     
     runprocess(arg_buff,bckgrnd_flag);
-    //restore buffer
+    
+    //restores buffer
     dup2(saved,1);
     close(saved);
   }
   else if (strcmp(command_buff[0], "<") == 0)
   {
-    int saved = dup(0);
-    int fd = open(command_buff[1], O_RDONLY);
+    saved = dup(0);
+    fd = open(command_buff[1], O_RDONLY);
+    if(fd == -1)
+    {
+      perror("File failed to open"\n);
+      exit(EXIT_FAILURE);
+    }
+
     dup2(fd, 0);
     close(fd);
 
@@ -352,9 +382,29 @@ void exec_ioredir(char **arg_buff, char **command_buff, int bckgrnd_flag)
     dup2(saved,0);
     close(saved);
   }
+  else if(strcmp(command_buff[0], "2>") == 0)
+  {
+    saved = dup(2);
+    fd = open(command_buff[1], O_WRONLY | O_CREAT | O_TRUNC, S_IRWXU);
+    if(fd == -1)
+    {
+      perror("File failed to open"\n);
+      exit(EXIT_FAILURE);
+    }
+    dup2(fd, 2);
+    close(fd);
+
+    runprocess(arg_buff,bckgrnd_flag);
+    dup2(saved,2);
+    close(saved);
+  }
 
   return;
 }
+/*
+Checks if given argument is to be run in
+the background
+*/
 
 int bckgrnd_check(char ** arg_buff){
 
@@ -476,7 +526,8 @@ int command_handler(char **commands, int commands_size, char **arg_buffer, int b
         {
           status = 1;
         }
-        else if (strcmp(commands[j], "<") == 0 || strcmp(commands[j], ">") == 0)
+        else if (strcmp(commands[j], "<") == 0 || strcmp(commands[j], ">") == 0
+		 || strcmp(commands[j], "2>") == 0 || strcmp(commands[j], ">>") == 0)
         {
           status = 2;
         }

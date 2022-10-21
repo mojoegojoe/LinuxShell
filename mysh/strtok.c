@@ -14,6 +14,7 @@ void execute_command(char *input_buff);
 int check_for_built_in(char **args);
 void handle_builtin_functions(char **input);
 void echo(char *command);
+void ls(char **args);
 void pwd();
 int cd(char **args);
 /* PROC FUNCTIONS */
@@ -74,7 +75,7 @@ int print_line(char *BUFFER, char *delim, int fd)
   }
   while (i <= BUFFERSIZE)
   {
-    if (BUFFER[i] == delim[2])
+    if (BUFFER[i] == delim[0])
     {
       return 0;
     }
@@ -93,17 +94,13 @@ void pwd()
   char PWD[BUFF_SIZE];
   if (getcwd(PWD, BUFF_SIZE) == NULL)
   {
-
     print_line("getcwd() error", "\0", 2);
-    perror("getcwd() error");
     exit(1);
   }
-
   else
   {
-    printf("%s\n",PWD);
-    //print_line(PWD, "\n", 1);
-    //print_line("\n\0", "\0", 1);
+    print_line(PWD, "\n", 1);
+    print_line("\n\0", "\0", 1);
   }
   return;
 }
@@ -234,8 +231,10 @@ void shell()
 {
   pwd();
   char input_buff[BUFF_SIZE];
+  print_line("WELCOME TO myShell - A low level C Linux shell!\n\n\0","\0",1); 
   do
   {
+    print_line("mysh$:\0", "\0", 1);
     if (read_input(input_buff, BUFF_SIZE))
     {
       execute_command(input_buff);

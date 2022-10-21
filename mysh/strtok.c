@@ -28,6 +28,8 @@ int command_handler(char **commands, int commands_size, char **arg_buffer, int a
 /* STRING MANIPULATION */
 char *str_tok_t(char *str, const char *delim);
 char *str_tok(char *str, const char *delim);
+char* strcpy(char* destination, const char* source);
+int str_cpy(char *BUFFER,char *SRC, char *delim);
 int strcmp(char *str1, char *str2);
 void clear_rest(char **buff, int buff_size, int index);
 void clear_buffer(char buff[], int buff_size, int index);
@@ -228,6 +230,10 @@ void shell()
 
 void execute_command(char *input_buff)
 {
+  char input_copy[BUFF_SIZE];
+  char * input = strcpy(input_copy,input_buff);
+  //printf("copied cmd %s",input_copy);
+  // printf("ptr to cmd %s",input);
   char *commands[] = {"|", "<", ">", "&"};
   char *arg_buff[BUFF_SIZE];
   char *command_buff[BUFF_SIZE];
@@ -238,47 +244,28 @@ void execute_command(char *input_buff)
   int command;
   int running = 1;
   int saved;
-  int bckgrnd_flag;
+  int bckgrnd_flag = 0;
+
+  get_args(input_copy, arg_buff, BUFF_SIZE);
+  bckgrnd_flag = bckgrnd_check(arg_buff);
+  command = command_handler(commands, COMMAND_SIZE, arg_buff, BUFF_SIZE, command_buff);
 
   if (check_piping(input_buff))
   {
-    printf("\n %s stuff \n", input_buff);
+    //printf("\n %s stuff \n", input_buff);
     piping(input_buff);
     // fork_pipes(command);
     return;
   }
-
-  get_args(input_buff, arg_buff, BUFF_SIZE);
-  bckgrnd_flag = bckgrnd_check(arg_buff);
-
-  command = command_handler(commands, COMMAND_SIZE, arg_buff, BUFF_SIZE, command_buff);
-  // if (check_redirection(command))
-  // {
-  //   exec_ioredir(arg_buff, command_buff);
-  //   return;
-  // }
-
-  // printf("\nstatus: %d\n", command);
-
-  //   else if(!strcmp(args[no_args-1], "&"))
-  // {
-  //     args[no_args-1] = NULL;
-  //     run(args, no_args, 1);
-  // }
-
-  if (command == 0)
-  {
-    runprocess(arg_buff, bckgrnd_flag);
-  }
-  else if (command == 2)
-  {
-    runprocess(arg_buff, 1);
-  }
-  else if (command == 3)
+   else if (check_redirection(input_buff))
   {
     exec_ioredir(arg_buff, command_buff, bckgrnd_flag);
     runprocess(arg_buff, 0);
   }
+  else {
+    runprocess(arg_buff, bckgrnd_flag);
+  }
+  clear_buffer(input_copy, BUFF_SIZE, 0);
   return;
 }
 
@@ -385,7 +372,7 @@ char **pipe_elements(char *input)
   {
     pipe_args[oof++] = p;
     p = str_tok(NULL, "|");
-    printf("%s", p);
+    //printf("%s", p);
   }
 
   return pipe_args;
@@ -551,6 +538,51 @@ int strcmp(char *str1, char *str2)
   return *(unsigned char *)str1 - *(unsigned char *)str2;
 }
 
+int str_cpy(char *BUFFER,char *SRC, char *delim){
+  int i = 0;
+  if(!BUFFER || !SRC){
+
+    print_line("NO BUFFER TO COPY", delim, 2);
+  }
+  while(SRC[i] != delim[2] && i <= BUFFERSIZE){
+    BUFFER[i] = SRC[i];
+    i++;
+  }
+  if(SRC[i] != delim[2]){ // reached end of buffer before end of src
+    print_line("ERROR SRC CPY NOT COMPLETE - STR TO LONG FOR BUFFER\n", delim,2);
+    return 1;
+  }
+  while(i<BUFFERSIZE){
+     BUFFER[i] = '\0'; // ends str copy
+     i++;
+  }
+  return 0;
+}
+char* strcpy(char* destination, const char* source)
+{
+    // return if no memory is allocated to the destination
+    if (destination == NULL) {
+        return NULL;
+    }
+ 
+    // take a pointer pointing to the beginning of the destination string
+    char *ptr = destination;
+ 
+    // copy the C-string pointed by source into the array
+    // pointed by destination
+    while (*source != '\0')
+    {
+        *destination = *source;
+        destination++;
+        source++;
+    }
+ 
+    // include the terminating null character
+    *destination = '\0';
+ 
+    // the destination is returned by standard `strcpy()`
+    return ptr;
+}
 /*
 TODO:
 

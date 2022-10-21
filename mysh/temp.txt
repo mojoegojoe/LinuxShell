@@ -1,0 +1,4 @@
+total 12
+drwxr-xr-x  3 root  root  4096 Sep 25 18:02 .
+drwxr-xr-x 20 root  root  4096 Sep 25 18:01 ..
+drwxr-xr-x 27 soren soren 4096 Oct 21 14:28 soren

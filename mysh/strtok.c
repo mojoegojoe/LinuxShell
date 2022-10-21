@@ -217,7 +217,12 @@ void exec_ioredir(char **arg_buff, char **command_buff, int bckgrnd_flag)
     {
       fd = open(command_buff[1], O_WRONLY | O_CREAT | O_APPEND, S_IRWXU);
     }
-	
+
+    if(fd == -1)
+    {
+      perror("File failed to open"\n);
+      exit(EXIT_FAILURE);
+    }
     dup2(fd, 1);
     close(fd);
     
@@ -231,6 +236,12 @@ void exec_ioredir(char **arg_buff, char **command_buff, int bckgrnd_flag)
   {
     saved = dup(0);
     fd = open(command_buff[1], O_RDONLY);
+    if(fd == -1)
+    {
+      perror("File failed to open"\n);
+      exit(EXIT_FAILURE);
+    }
+
     dup2(fd, 0);
     close(fd);
 
@@ -242,6 +253,11 @@ void exec_ioredir(char **arg_buff, char **command_buff, int bckgrnd_flag)
   {
     saved = dup(2);
     fd = open(command_buff[1], O_WRONLY | O_CREAT | O_TRUNC, S_IRWXU);
+    if(fd == -1)
+    {
+      perror("File failed to open"\n);
+      exit(EXIT_FAILURE);
+    }
     dup2(fd, 2);
     close(fd);
 

@@ -6,48 +6,146 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
+/* SHELL */
+void shell();
+void execute_command(char *input_buff);
+
+/* PROC FUNCTIONS */
 void runprocess(char **arg_buff, int isBackGround);
-char *strtok(char *str, const char *delim);
-void get_args(char *str, char **arg_buffer, int arg_buffer_size);
+int bckgrnd_check(char ** arg_buff);
+
+/* IO */
 int read_input(char *buffer, int buffer_size);
+int print_line(char *BUFFER, char *delim, int fd);
+
+/* ARG PARSING */
+void get_args(char *str, char **arg_buffer, int arg_buffer_size);
 int command_handler(char **commands, int commands_size, char **arg_buffer, int arg_buff_size, char **command_buff);
+
+/* STRING MANIPULATION */
+char *str_tok(char *str, const char *delim);
 int strcmp(char *str1, char *str2);
 void clear_rest(char **buff, int buff_size, int index);
 void clear_buffer(char buff[], int buff_size, int index);
 void copy_starting(char **buff, char **buff2, int index);
-void exec_ioredir(char **arg_buff, char **command_buff,int bckgrnd_flag);
+
+
+
+/* IO REDIRECTION */
+int check_redirection(char *command);
+void exec_ioredir(char **arg_buff, char **command_buff, int bckgrnd_flag);
+
+/* PIPING */
+int check_piping(char *command);
 char **pipe_elements(char *input);
 void piping(char *command);
-void shell();
-void execute_command(char *input_buff);
-// int check_redirection(char *command);
-int check_piping(char *command);
-int bckgrnd_check(char ** arg_buff);
-
 
 #define BUFF_SIZE 80
 #define COMMAND_SIZE 4
 #define EXIT_FAILURE 1
+#define HOME "/home/soren"
+#define BUFFERSIZE 256
 
-// int check_redirection(char *command)
+
+/********************************************************
+/    @FUNCION print_line
+/    @input   BUFFER - Pointer to a defined char array
+/             delim  - Pointer to an array of delimitors
+/                       function set by arr[2]
+/    @output  bool   - read line pass/fail boolean  
+/    @method  If no root buffer given a error flag is set
+/             while there is space left on the root buffer 
+/                                  we write in user output.
+/
+********************************************************/
+int print_line(char *BUFFER, char *delim, int fd){
+  // write each char of the length defined output to screen
+  int i = 0;
+  if(!BUFFER){
+    return 1;
+  }
+  while(i<=BUFFERSIZE){
+    if(BUFFER[i] == delim[2]){
+      return 0;
+    }
+    write(fd, &BUFFER[i], 1);
+    i++;
+  };
+  
+  return 1;
+}
+// need echo
+// need pwd 
+// need cd 
+
+// void pwd()
 // {
-//   char *out = strstr(command, ">");
-//   char *in = strstr(command, "<");
+//     char *PWD = (char *)malloc(2048 * sizeof(char));
+//     if (getcwd(PWD, 2048) == NULL)
+//     {
+//        perror("getcwd() error");
+//        exit(1);
+//     }
 
-//   if ((out != NULL) && (in != NULL))
-//     return 3;
-
-//   else if (out != NULL)
-//     return 2;
-
-//   else if (in != NULL)
-//     return 1;
-
-//   else
-//     return 0;
+//     else printf("%s\n", PWD);
+//     free(PWD);
+//     return;
 // }
 
-unsigned char strContains(char* string, int str_len, char* toFind, int f_len)
+// void echo(char *command)
+// {
+//     char *token = command;
+//     token = str_tok(NULL, " \"\n\t\r"); 
+//     while (token != NULL)
+//     {
+//         printf("%s ",token);
+//         token = str_tok(NULL, " \"\n\t\r");
+//     }
+//     printf("\n");
+//     return;
+// }
+
+// void cd(char *command)
+// {
+//     char *token = command;
+//     token = str_tok(NULL, " \n\t\r");
+//     if(token == NULL) 
+//     {
+//         if(chdir(HOME) != 0) 
+//             perror("Error");
+//     }
+
+//     else if(token[0] == '~')
+//     {   
+//         int n = strlen(token);
+//         char *temp = (char *)malloc(sizeof(char) *n);
+//         strcpy(temp,"\0");
+//         int i=0;
+//         if(n > 1)
+//         {
+//             for(i=1; i < n; i++)
+//                 temp[i-1] = token[i];
+//         }
+//         temp[i] ='\0';
+        
+//         char *final_path = (char *)malloc(sizeof(char) *(n + strlen(HOME)+12));
+//         strcpy(final_path, HOME);
+//         strcat(final_path, temp);
+//         final_path[n +strlen(HOME)-1] ='\0';
+//         free(temp);
+//         if(chdir(final_path) != 0) 
+//             perror("Error");
+
+//         free(final_path);
+//     }
+    
+//     else if(chdir(token) != 0) 
+//         perror("Error");
+
+//     return;
+// }
+
+unsigned char str_contains(char* string, int str_len, char* toFind, int f_len)
 {
     unsigned char slen = str_len;
     unsigned char tFlen = f_len;
@@ -74,9 +172,27 @@ unsigned char strContains(char* string, int str_len, char* toFind, int f_len)
     else return -1;
 }
 
+int check_redirection(char *command)
+{
+  unsigned char out = str_contains(command,BUFF_SIZE, ">", 1);
+  unsigned char in = str_contains(command,BUFF_SIZE, "<", 1);
+
+  if ((out > 0) && (in > 0))
+    return 3;
+
+  else if (out > 0)
+    return 2;
+
+  else if (in > 0)
+    return 1;
+
+  else
+    return 0;
+}
+
 int check_piping(char *command)
 {
-  unsigned char is_pipe = strContains(command,BUFF_SIZE, "|",1);
+  unsigned char is_pipe = str_contains(command,BUFF_SIZE, "|",1);
   if (is_pipe > 0)
     return 1;
 
@@ -93,8 +209,9 @@ void shell()
   {
     // CHILD_ID = -1;
     // prompt();
-    input_buff[read_input(input_buff, BUFF_SIZE)-1] = '\0';
-    //printf("this is string: %s\n", input_buff);
+    read_input(input_buff, BUFF_SIZE);
+    
+    //printf("\ninput command: %s\n", input_buff);
     
     char **commands;
     // commands = tokenize(input);
@@ -111,8 +228,10 @@ void execute_command(char *input_buff)
   char *commands[] = {"|","<", ">", "&"};
   char *arg_buff[BUFF_SIZE];
   char *command_buff[BUFF_SIZE];
-  //pid_t pid;
-  //int status;
+
+  pid_t pid;
+  int status;
+
   int command;
   int running = 1;
   int saved;
@@ -120,26 +239,16 @@ void execute_command(char *input_buff)
 
   if (check_piping(input_buff))
   {
+    printf("\n %s \n",input_buff);
     piping(input_buff);
     // fork_pipes(command);
     return;
   }
 
   get_args(input_buff, arg_buff, BUFF_SIZE);
-  //  for(int i = 0; i<BUFF_SIZE; i++){
-  //  printf("args: %s\n", arg_buff[i]);
-  // }
-  bckgrnd_flag = bckgrnd_check(arg_buff);
+  
+  bckgrnd_flag = bckgrnd_check(arg_buff);command = command_handler(commands, COMMAND_SIZE, arg_buff, BUFF_SIZE, command_buff);
   command = command_handler(commands, COMMAND_SIZE, arg_buff, BUFF_SIZE, command_buff);
-  //  for(int i = 0;i<BUFF_SIZE; i++){
-  //  printf("command args: %s\n", command_buff[i]);
-  // }
-  //   for(int i = 0; i<BUFF_SIZE; i++){
-  //  printf("args: %s\n", arg_buff[i]);
-  // }
-
-
- 
   // if (check_redirection(command))
   // {
   //   exec_ioredir(arg_buff, command_buff);
@@ -147,19 +256,38 @@ void execute_command(char *input_buff)
   // }
 
   //printf("\nstatus: %d\n", command);
-  
-  switch (command)
-  {
-  case 0:
+
+    //   else if(!strcmp(args[no_args-1], "&"))
+    // {
+    //     args[no_args-1] = NULL;
+    //     run(args, no_args, 1);
+    // }
+
+
+
+  if (command == 0) {
     runprocess(arg_buff, bckgrnd_flag);
-    break;
-  case 2:
+  } else if (command == 2) {
+    runprocess(arg_buff, 1);
+  }
+  else if (command == 3) {
     exec_ioredir(arg_buff, command_buff,bckgrnd_flag);
-    break;
+    runprocess(arg_buff, 0);
   }
   return;
 }
 
+// void handle_builtin_functions(char * input) {
+//     char * command = str_tok(command, " \n\t\r");
+//  if(strcmp(command, "pwd") == 0)
+//         pwd();
+
+//   else if(strcmp(command, "cd")==0)
+//         cd(command);
+
+//   else if(strcmp(command, "echo")==0)
+//         echo(command);
+// }
 int main()
 {
 
@@ -186,18 +314,18 @@ void runprocess(char **arg_buff, int isBackGround)
       perror("Command not found");
       exit(EXIT_FAILURE);
     }
-  }
-  
-  if (isBackGround != 0)
+    if (isBackGround != 1)
     {
-      printf("waiting\n");
+      //printf("waiting\n");
       waitpid(pid, &status, 0);
-    }
-
+    } 
+    // else (
+    //   //getpid()
+    // )
+  }
 }
 
 // TO DO: EXECUTE io redirection
-
 void exec_ioredir(char **arg_buff, char **command_buff, int bckgrnd_flag)
 {
 
@@ -240,7 +368,7 @@ int bckgrnd_check(char ** arg_buff){
 
 char **pipe_elements(char *input)
 {
-  char *p = strtok(input, "|");
+  char *p = str_tok(input, "|");
   // char **pipe_args;
   char **pipe_args = malloc(256 * sizeof(char *));
 
@@ -249,7 +377,7 @@ char **pipe_elements(char *input)
   while (p != NULL)
   {
     pipe_args[oof++] = p;
-    p = strtok(NULL, "|");
+    p = str_tok(NULL, "|");
     //printf("%s", p);
   }
 
@@ -309,6 +437,7 @@ void piping(char *command)
   }
 }
 
+
 /*
 compares command array with arg_buffer and
 returns a number based on the command detected
@@ -362,6 +491,7 @@ int command_handler(char **commands, int commands_size, char **arg_buffer, int b
 
   return status;
 }
+
 
 /*
 set the pointer at index and the pointers that come after
@@ -452,10 +582,10 @@ in the arg_buffer.
 void get_args(char *str, char **arg_buffer, int arg_buffer_size)
 {
 
-  arg_buffer[0] = strtok(str, " \n");
+  arg_buffer[0] = str_tok(str, " \n");
   for (int i = 1; i < arg_buffer_size; i++)
   {
-    arg_buffer[i] = strtok(NULL, " \n");
+    arg_buffer[i] = str_tok(NULL, " \n");
     if (arg_buffer[i] == NULL)
     {
       break;
@@ -464,10 +594,10 @@ void get_args(char *str, char **arg_buffer, int arg_buffer_size)
   return;
 }
 /*
-- works the same way as strtok function
+- works the same way as str_tok function
  */
 
-char *mystrtok(char *str, const char *delim)
+char *str_tok(char *str, const char *delim)
 {
 
   static char *token;

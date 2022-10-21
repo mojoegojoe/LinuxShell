@@ -26,7 +26,7 @@ int bckgrnd_check(char ** arg_buff);
 
 
 #define BUFF_SIZE 80
-#define COMMAND_SIZE 4
+#define COMMAND_SIZE 5
 #define EXIT_FAILURE 1
 
 // int check_redirection(char *command)
@@ -108,7 +108,7 @@ void shell()
 
 void execute_command(char *input_buff)
 {
-  char *commands[] = {"|","<", ">", "&"};
+  char *commands[] = {"|","<", ">","2>","&"};
   char *arg_buff[BUFF_SIZE];
   char *command_buff[BUFF_SIZE];
   //pid_t pid;
@@ -222,6 +222,17 @@ void exec_ioredir(char **arg_buff, char **command_buff, int bckgrnd_flag)
 
     runprocess(arg_buff,bckgrnd_flag);
     dup2(saved,0);
+    close(saved);
+  }
+  else if(strcmp(command_buff[0], "2>") == 0)
+  {
+    int saved = dup(2);
+    int fd = open(command_buff[1], O_WRONLY | O_CREAT | O_TRUNC, S_IRWXU);
+    dup2(fd, 2);
+    close(fd);
+
+    runprocess(arg_buff,bckgrnd_flag);
+    dup2(saved,2);
     close(saved);
   }
 
@@ -347,7 +358,8 @@ int command_handler(char **commands, int commands_size, char **arg_buffer, int b
         {
           status = 1;
         }
-        else if (strcmp(commands[j], "<") == 0 || strcmp(commands[j], ">") == 0)
+        else if (strcmp(commands[j], "<") == 0 || strcmp(commands[j], ">") == 0
+		 || strcmp(commands[j], "2>") == 0)
         {
           status = 2;
         }

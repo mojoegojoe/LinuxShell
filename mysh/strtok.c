@@ -10,6 +10,9 @@
 void shell();
 void execute_command(char *input_buff);
 
+/* BUILT IN SHELL FUNCTIONS*/
+void echo(char *command);
+void pwd();
 /* PROC FUNCTIONS */
 void runprocess(char **arg_buff, int isBackGround);
 int bckgrnd_check(char **arg_buff);
@@ -39,7 +42,9 @@ int check_piping(char *command);
 char **pipe_elements(char *input);
 void piping(char *command);
 
-#define BUFF_SIZE 80
+
+
+#define BUFF_SIZE 256
 #define COMMAND_SIZE 4
 #define EXIT_FAILURE 1
 #define HOME "/home/soren"
@@ -80,32 +85,32 @@ int print_line(char *BUFFER, char *delim, int fd)
 // need pwd
 // need cd
 
-// void pwd()
-// {
-//     char *PWD = (char *)malloc(2048 * sizeof(char));
-//     if (getcwd(PWD, 2048) == NULL)
-//     {
-//        perror("getcwd() error");
-//        exit(1);
-//     }
+void pwd()
+{
+    char PWD[BUFF_SIZE];
+    if (getcwd(PWD, BUFF_SIZE) == NULL)
+    {
+       perror("getcwd() error");
+       exit(1);
+    }
 
-//     else printf("%s\n", PWD);
-//     free(PWD);
-//     return;
-// }
+    else printf("%s\n", PWD);
+    //free(PWD);
+    return;
+}
 
-// void echo(char *command)
-// {
-//     char *token = command;
-//     token = str_tok(NULL, " \"\n\t\r");
-//     while (token != NULL)
-//     {
-//         printf("%s ",token);
-//         token = str_tok(NULL, " \"\n\t\r");
-//     }
-//     printf("\n");
-//     return;
-// }
+void echo(char *command)
+{
+    char *token = command;
+    token = str_tok(NULL, " \"\n\t\r");
+    while (token != NULL)
+    {
+        printf("%s ",token);
+        token = str_tok(NULL, " \"\n\t\r");
+    }
+    printf("\n");
+    return;
+}
 
 // void cd(char *command)
 // {
@@ -147,15 +152,15 @@ int print_line(char *BUFFER, char *delim, int fd)
 //     return;
 // }
 
-unsigned char str_contains(char *string, int str_len, char *toFind, int f_len)
+int str_contains(char *string, int str_len, char *toFind, int f_len)
 {
-  unsigned char slen = str_len;
-  unsigned char tFlen = f_len;
-  unsigned char found = 0;
+  int slen = str_len;
+  int tFlen = f_len;
+  int found = 0;
 
   if (slen >= tFlen)
   {
-    for (unsigned char s = 0, t = 0; s < slen; s++)
+    for (int s = 0, t = 0; s < slen; s++)
     {
       do
       {
@@ -205,30 +210,18 @@ int check_piping(char *command)
   unsigned char is_pipe = str_contains(command, BUFF_SIZE, "|", 1);
   if (is_pipe > 0)
     return 1;
-
   else
     return 0;
 }
 
 void shell()
 {
+  pwd();
   char input_buff[BUFF_SIZE];
-
-  // char ** buff_test = &input_buff;
   do
   {
-    // CHILD_ID = -1;
-    // prompt();
     read_input(input_buff, BUFF_SIZE);
-
-    // printf("\ninput command: %s\n", input_buff);
-
-    char **commands;
-    // commands = tokenize(input);
-    // for(int i = 0; i < no; i++)
-    // piping(input_buff);
     execute_command(input_buff);
-
     clear_buffer(input_buff, BUFF_SIZE, 0);
   } while (1);
 }
@@ -249,16 +242,15 @@ void execute_command(char *input_buff)
 
   if (check_piping(input_buff))
   {
-    printf("\n %s \n", input_buff);
+    printf("\n %s stuff \n", input_buff);
     piping(input_buff);
     // fork_pipes(command);
     return;
   }
 
   get_args(input_buff, arg_buff, BUFF_SIZE);
-
   bckgrnd_flag = bckgrnd_check(arg_buff);
-  command = command_handler(commands, COMMAND_SIZE, arg_buff, BUFF_SIZE, command_buff);
+
   command = command_handler(commands, COMMAND_SIZE, arg_buff, BUFF_SIZE, command_buff);
   // if (check_redirection(command))
   // {
@@ -607,6 +599,7 @@ void get_args(char *str, char **arg_buffer, int arg_buffer_size)
   }
   return;
 }
+
 /*
 - works the same way as str_tok function
  */

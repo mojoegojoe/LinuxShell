@@ -11,8 +11,11 @@ void shell();
 void execute_command(char *input_buff);
 
 /* BUILT IN SHELL FUNCTIONS*/
+int check_for_built_in(char **args);
+void handle_builtin_functions(char **input);
 void echo(char *command);
 void pwd();
+int cd(char **args);
 /* PROC FUNCTIONS */
 void runprocess(char **arg_buff, int isBackGround);
 int bckgrnd_check(char **arg_buff);
@@ -28,8 +31,8 @@ int command_handler(char **commands, int commands_size, char **arg_buffer, int a
 /* STRING MANIPULATION */
 char *str_tok_t(char *str, const char *delim);
 char *str_tok(char *str, const char *delim);
-char* strcpy(char* destination, const char* source);
-int str_cpy(char *BUFFER,char *SRC, char *delim);
+char *strcpy(char *destination, const char *source);
+int str_cpy(char *BUFFER, char *SRC, char *delim);
 int strcmp(char *str1, char *str2);
 void clear_rest(char **buff, int buff_size, int index);
 void clear_buffer(char buff[], int buff_size, int index);
@@ -43,8 +46,6 @@ void exec_ioredir(char **arg_buff, char **command_buff, int bckgrnd_flag);
 int check_piping(char *command);
 char **pipe_elements(char *input);
 void piping(char *command);
-
-
 
 #define BUFF_SIZE 256
 #define COMMAND_SIZE 4
@@ -89,70 +90,83 @@ int print_line(char *BUFFER, char *delim, int fd)
 
 void pwd()
 {
-    char PWD[BUFF_SIZE];
-    if (getcwd(PWD, BUFF_SIZE) == NULL)
-    {
-       perror("getcwd() error");
-       exit(1);
-    }
+  char PWD[BUFF_SIZE];
+  if (getcwd(PWD, BUFF_SIZE) == NULL)
+  {
 
-    else printf("%s\n", PWD);
-    //free(PWD);
-    return;
+    print_line("getcwd() error", "\0", 2);
+    perror("getcwd() error");
+    exit(1);
+  }
+
+  else
+  {
+    printf("%s\n",PWD);
+    //print_line(PWD, "\n", 1);
+    //print_line("\n\0", "\0", 1);
+  }
+  return;
 }
 
 void echo(char *command)
 {
-    char *token = command;
+  printf("%s\n",command);
+  char *token = command;
+  token = str_tok(NULL, " \"\n\t\r");
+  while (token != NULL)
+  {
+    printf("%s",token);
+    //print_line(token, "\0", 1);
     token = str_tok(NULL, " \"\n\t\r");
-    while (token != NULL)
-    {
-        printf("%s ",token);
-        token = str_tok(NULL, " \"\n\t\r");
-    }
-    printf("\n");
-    return;
+  }
+  //print_line("\n\0", "\0", 1);
+  return;
 }
 
-// void cd(char *command)
-// {
-//     char *token = command;
-//     token = str_tok(NULL, " \n\t\r");
-//     if(token == NULL)
-//     {
-//         if(chdir(HOME) != 0)
-//             perror("Error");
-//     }
+int cd(char **args)
+{
+  if (args[1] == NULL)
+  {
+    print_line("expected argument to \"cd\"\n\0", "\0", 2);
+  }
+  else
+  {
+    if (chdir(args[1]) != 0)
+    {
+      print_line("invalid argument to \"cd\"\n\0", "\0", 2);
+    }
+  }
+  return 1;
+}
 
-//     else if(token[0] == '~')
-//     {
-//         int n = strlen(token);
-//         char *temp = (char *)malloc(sizeof(char) *n);
-//         strcpy(temp,"\0");
-//         int i=0;
-//         if(n > 1)
-//         {
-//             for(i=1; i < n; i++)
-//                 temp[i-1] = token[i];
-//         }
-//         temp[i] ='\0';
+int check_for_built_in(char **args)
+{
+  if ((strcmp(args[0], "pwd") == 0) || (strcmp(args[0], "cd") == 0) || (strcmp(args[0], "echo") == 0))
+  {
+      //printf("\n%s\n\n\n\n",args[0]);
+    return 1;
+  }
+  return 0;
+}
+void handle_builtin_functions(char **input)
+{
+  char *command = str_tok(input[0], " \n\t\r");
+  printf("\n%s\n",command);
+  if (strcmp(command, "pwd") == 0) {
+    pwd();
+  }
+  else if (strcmp(command, "cd") == 0) {
+    printf("%s\n",input[1]);
+    cd(input);
 
-//         char *final_path = (char *)malloc(sizeof(char) *(n + strlen(HOME)+12));
-//         strcpy(final_path, HOME);
-//         strcat(final_path, temp);
-//         final_path[n +strlen(HOME)-1] ='\0';
-//         free(temp);
-//         if(chdir(final_path) != 0)
-//             perror("Error");
-
-//         free(final_path);
-//     }
-
-//     else if(chdir(token) != 0)
-//         perror("Error");
-
-//     return;
-// }
+  } else if (strcmp(command, "echo") == 0) {
+    // printf("%s\n",input[1]);
+    for (int i = 0; input[i+1] != NULL; i++) {
+      printf("%s",input[i+1]);
+    }
+    echo(input[1]);
+  }
+}
 
 int str_contains(char *string, int str_len, char *toFind, int f_len)
 {
@@ -222,18 +236,20 @@ void shell()
   char input_buff[BUFF_SIZE];
   do
   {
-    read_input(input_buff, BUFF_SIZE);
-    execute_command(input_buff);
-    clear_buffer(input_buff, BUFF_SIZE, 0);
+    if (read_input(input_buff, BUFF_SIZE))
+    {
+      execute_command(input_buff);
+      clear_buffer(input_buff, BUFF_SIZE, 0);
+    }
   } while (1);
 }
 
 void execute_command(char *input_buff)
 {
   char input_copy[BUFF_SIZE];
-  char * input = strcpy(input_copy,input_buff);
-  //printf("copied cmd %s",input_copy);
-  // printf("ptr to cmd %s",input);
+  char *input = strcpy(input_copy, input_buff);
+  // printf("copied cmd %s",input_copy);
+  //  printf("ptr to cmd %s",input);
   char *commands[] = {"|", "<", ">", "&"};
   char *arg_buff[BUFF_SIZE];
   char *command_buff[BUFF_SIZE];
@@ -252,34 +268,24 @@ void execute_command(char *input_buff)
 
   if (check_piping(input_buff))
   {
-    //printf("\n %s stuff \n", input_buff);
+    // printf("\n %s stuff \n", input_buff);
     piping(input_buff);
     // fork_pipes(command);
     return;
   }
-   else if (check_redirection(input_buff))
+  else if (check_redirection(input_buff))
   {
     exec_ioredir(arg_buff, command_buff, bckgrnd_flag);
     runprocess(arg_buff, 0);
   }
-  else {
+  else
+  {
     runprocess(arg_buff, bckgrnd_flag);
   }
   clear_buffer(input_copy, BUFF_SIZE, 0);
   return;
 }
 
-// void handle_builtin_functions(char * input) {
-//     char * command = str_tok(command, " \n\t\r");
-//  if(strcmp(command, "pwd") == 0)
-//         pwd();
-
-//   else if(strcmp(command, "cd")==0)
-//         cd(command);
-
-//   else if(strcmp(command, "echo")==0)
-//         echo(command);
-// }
 int main()
 {
 
@@ -289,6 +295,11 @@ int main()
 
 void runprocess(char **arg_buff, int isBackGround)
 {
+  if (check_for_built_in(arg_buff))
+  {
+    handle_builtin_functions(arg_buff);
+    return;
+  }
   pid_t pid = fork();
   int status;
   if (pid < 0)
@@ -372,7 +383,7 @@ char **pipe_elements(char *input)
   {
     pipe_args[oof++] = p;
     p = str_tok(NULL, "|");
-    //printf("%s", p);
+    // printf("%s", p);
   }
 
   return pipe_args;
@@ -538,50 +549,56 @@ int strcmp(char *str1, char *str2)
   return *(unsigned char *)str1 - *(unsigned char *)str2;
 }
 
-int str_cpy(char *BUFFER,char *SRC, char *delim){
+int str_cpy(char *BUFFER, char *SRC, char *delim)
+{
   int i = 0;
-  if(!BUFFER || !SRC){
+  if (!BUFFER || !SRC)
+  {
 
     print_line("NO BUFFER TO COPY", delim, 2);
   }
-  while(SRC[i] != delim[2] && i <= BUFFERSIZE){
+  while (SRC[i] != delim[2] && i <= BUFFERSIZE)
+  {
     BUFFER[i] = SRC[i];
     i++;
   }
-  if(SRC[i] != delim[2]){ // reached end of buffer before end of src
-    print_line("ERROR SRC CPY NOT COMPLETE - STR TO LONG FOR BUFFER\n", delim,2);
+  if (SRC[i] != delim[2])
+  { // reached end of buffer before end of src
+    print_line("ERROR SRC CPY NOT COMPLETE - STR TO LONG FOR BUFFER\n", delim, 2);
     return 1;
   }
-  while(i<BUFFERSIZE){
-     BUFFER[i] = '\0'; // ends str copy
-     i++;
+  while (i < BUFFERSIZE)
+  {
+    BUFFER[i] = '\0'; // ends str copy
+    i++;
   }
   return 0;
 }
-char* strcpy(char* destination, const char* source)
+char *strcpy(char *destination, const char *source)
 {
-    // return if no memory is allocated to the destination
-    if (destination == NULL) {
-        return NULL;
-    }
- 
-    // take a pointer pointing to the beginning of the destination string
-    char *ptr = destination;
- 
-    // copy the C-string pointed by source into the array
-    // pointed by destination
-    while (*source != '\0')
-    {
-        *destination = *source;
-        destination++;
-        source++;
-    }
- 
-    // include the terminating null character
-    *destination = '\0';
- 
-    // the destination is returned by standard `strcpy()`
-    return ptr;
+  // return if no memory is allocated to the destination
+  if (destination == NULL)
+  {
+    return NULL;
+  }
+
+  // take a pointer pointing to the beginning of the destination string
+  char *ptr = destination;
+
+  // copy the C-string pointed by source into the array
+  // pointed by destination
+  while (*source != '\0')
+  {
+    *destination = *source;
+    destination++;
+    source++;
+  }
+
+  // include the terminating null character
+  *destination = '\0';
+
+  // the destination is returned by standard `strcpy()`
+  return ptr;
 }
 /*
 TODO:

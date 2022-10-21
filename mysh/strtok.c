@@ -15,13 +15,15 @@ int strcmp(char *str1, char *str2);
 void clear_rest(char **buff, int buff_size, int index);
 void clear_buffer(char buff[], int buff_size, int index);
 void copy_starting(char **buff, char **buff2, int index);
-void exec_ioredir(char **arg_buff, char **command_buff);
+void exec_ioredir(char **arg_buff, char **command_buff,int bckgrnd_flag);
 char **pipe_elements(char *input);
 void piping(char *command);
 void shell();
 void execute_command(char *input_buff);
 // int check_redirection(char *command);
 int check_piping(char *command);
+int bckgrnd_check(char ** arg_buff);
+
 
 #define BUFF_SIZE 80
 #define COMMAND_SIZE 4
@@ -91,9 +93,8 @@ void shell()
   {
     // CHILD_ID = -1;
     // prompt();
-    read_input(input_buff, BUFF_SIZE);
-    
-    //printf("\ninput command: %s\n", input_buff);
+    input_buff[read_input(input_buff, BUFF_SIZE)-1] = '\0';
+    //printf("this is string: %s\n", input_buff);
     
     char **commands;
     // commands = tokenize(input);
@@ -107,13 +108,15 @@ void shell()
 
 void execute_command(char *input_buff)
 {
-  char *commands[] = {"|", "&", "<", ">"};
+  char *commands[] = {"|","<", ">", "&"};
   char *arg_buff[BUFF_SIZE];
   char *command_buff[BUFF_SIZE];
-  pid_t pid;
-  int status;
+  //pid_t pid;
+  //int status;
   int command;
   int running = 1;
+  int saved;
+  int bckgrnd_flag;
 
   if (check_piping(input_buff))
   {
@@ -123,7 +126,20 @@ void execute_command(char *input_buff)
   }
 
   get_args(input_buff, arg_buff, BUFF_SIZE);
+  //  for(int i = 0; i<BUFF_SIZE; i++){
+  //  printf("args: %s\n", arg_buff[i]);
+  // }
+  bckgrnd_flag = bckgrnd_check(arg_buff);
   command = command_handler(commands, COMMAND_SIZE, arg_buff, BUFF_SIZE, command_buff);
+  //  for(int i = 0;i<BUFF_SIZE; i++){
+  //  printf("command args: %s\n", command_buff[i]);
+  // }
+  //   for(int i = 0; i<BUFF_SIZE; i++){
+  //  printf("args: %s\n", arg_buff[i]);
+  // }
+
+
+ 
   // if (check_redirection(command))
   // {
   //   exec_ioredir(arg_buff, command_buff);
@@ -135,14 +151,10 @@ void execute_command(char *input_buff)
   switch (command)
   {
   case 0:
-    runprocess(arg_buff, 0);
+    runprocess(arg_buff, bckgrnd_flag);
     break;
   case 2:
-    runprocess(arg_buff, 1);
-    break;
-  case 3:
-    exec_ioredir(arg_buff, command_buff);
-    runprocess(arg_buff, 0);
+    exec_ioredir(arg_buff, command_buff,bckgrnd_flag);
     break;
   }
   return;
@@ -174,35 +186,56 @@ void runprocess(char **arg_buff, int isBackGround)
       perror("Command not found");
       exit(EXIT_FAILURE);
     }
-    if (isBackGround != 1)
+  }
+  
+  if (isBackGround != 0)
     {
-      //printf("waiting\n");
+      printf("waiting\n");
       waitpid(pid, &status, 0);
     }
-  }
+
 }
 
 // TO DO: EXECUTE io redirection
 
-void exec_ioredir(char **arg_buff, char **command_buff)
+void exec_ioredir(char **arg_buff, char **command_buff, int bckgrnd_flag)
 {
 
   if (strcmp(command_buff[0], ">") == 0)
   {
-    int fd = open(command_buff[1], O_WRONLY | O_CREAT, S_IRWXU);
+    int saved = dup(1);
+    int fd = open(command_buff[1], O_WRONLY | O_CREAT | O_TRUNC, S_IRWXU);
     dup2(fd, 1);
-
     close(fd);
+    
+    runprocess(arg_buff,bckgrnd_flag);
+    //restore buffer
+    dup2(saved,1);
+    close(saved);
   }
   else if (strcmp(command_buff[0], "<") == 0)
   {
+    int saved = dup(0);
     int fd = open(command_buff[1], O_RDONLY);
     dup2(fd, 0);
-
     close(fd);
+
+    runprocess(arg_buff,bckgrnd_flag);
+    dup2(saved,0);
+    close(saved);
   }
 
   return;
+}
+
+int bckgrnd_check(char ** arg_buff){
+
+  int i = 0;
+  
+  while(arg_buff[i] != NULL){
+    i++;
+  }
+  return strcmp(arg_buff[i-1], "&");
 }
 
 char **pipe_elements(char *input)
@@ -282,8 +315,7 @@ returns a number based on the command detected
 
 0 = no commands
 1 = pipe
-2 = ampersand for background process
-3 = io redirection
+2 = io redir
 
 If a command is detected, the command buffer is also filled and the
 arg buffer is modified to remove the command and its arguments
@@ -308,17 +340,16 @@ int command_handler(char **commands, int commands_size, char **arg_buffer, int b
       {
         copy_starting(arg_buffer, command_buff, i);
         found = 1;
+	if(strcmp(commands[j], "&") == 0){
+	  status = 0;
+	}
         if (strcmp(commands[j], "|") == 0)
         {
           status = 1;
         }
-        else if (strcmp(commands[j], "&") == 0)
-        {
-          status = 2;
-        }
         else if (strcmp(commands[j], "<") == 0 || strcmp(commands[j], ">") == 0)
         {
-          status = 3;
+          status = 2;
         }
         clear_rest(arg_buffer, buff_size, i);
       }

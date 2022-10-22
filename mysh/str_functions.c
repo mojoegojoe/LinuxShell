@@ -120,7 +120,6 @@ int str_cpy(char *BUFFER, char *SRC, char *delim)
   int i = 0;
   if (!BUFFER || !SRC)
   {
-
     print_line("NO BUFFER TO COPY", delim, 2);
   }
   while (SRC[i] != delim[2] && i <= BUFFERSIZE)

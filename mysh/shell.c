@@ -43,32 +43,27 @@ void execute_command(char *input_buff)
     // int saved;
     int bckgrnd_flag = 0;
 
-    get_args(input_copy, arg_buff, BUFF_SIZE);
-    bckgrnd_flag = bckgrnd_check(arg_buff);
-    command = command_handler(commands, COMMAND_SIZE, arg_buff, BUFF_SIZE, command_buff);
-    //printf("first command: %s\n", command_buff[0]);
-
-    if (input[0] == '\n')
-    {
-        return;
-    }
-    if (check_piping(input_buff))
-    {
-        // printf("\n %s stuff \n", input_buff);
-        piping(input_buff);
-        // fork_pipes(command);
-        return;
-    }
-    else if (command == 2) // check_redirection(input_buff))
-    {
-        exec_ioredir(arg_buff, command_buff, bckgrnd_flag);
-    }
-    else
-    {
-        runprocess(arg_buff, bckgrnd_flag);
-    }
-    clear_buffer(input_copy, BUFF_SIZE, 0);
+  get_args(input_copy, arg_buff, BUFF_SIZE);
+  bckgrnd_flag = bckgrnd_check(arg_buff);
+  command = command_handler(commands, COMMAND_SIZE, arg_buff, BUFF_SIZE, command_buff);
+  printf("first command: %s\n", command_buff[0]);
+  if (check_piping(input_buff))
+  {
+    // printf("\n %s stuff \n", input_buff);
+    piping(input_buff);
+    // fork_pipes(command);
     return;
+  }
+  else if(command == 2)//check_redirection(input_buff))
+  {
+    exec_ioredir(arg_buff, command_buff, bckgrnd_flag);
+  }
+  else
+  {
+    runprocess(arg_buff, bckgrnd_flag);
+  }
+  clear_buffer(input_copy, BUFF_SIZE, 0);
+  return;
 }
 
 /*

@@ -5,7 +5,7 @@ The mysh program provides a subset of the functionality provided by common Linux
   The program is implemented in C and is easily buildable though the "make" command. Is a stand alone program, meaning that not only the standard C libary is [not] used for all functional components, instead we fully utalized the portable linux system calls. 
 
 # Functionally
-  Fully interactive interface the allows for repeated user inputed prompts from the standard input libary, execute the process (with appropriate user error message when execution is not possible) and return an output to the user. This proceses is continued indefintaly until the user exits mysh.\
+  Fully interactive interface the allows for repeated user inputed prompts from the standard input libary, execute the process (with appropriate user error message when execution is not possible) and return an output to the user. This proceses is continued indefintaly until the user exit_shells mysh.\
   The shell can run an interactive login screen, when accessed a client can access one or more user accounts. 
   
 # Shell IO

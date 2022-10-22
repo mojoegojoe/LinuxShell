@@ -28,7 +28,6 @@ void runprocess(char **arg_buff, int isBackGround)
   }
   if (isBackGround != 0)
   {
-      printf("waiting\n");
       waitpid(pid, &status, 0);
   }
     // else (

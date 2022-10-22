@@ -49,7 +49,7 @@ void piping(char *command);
 
 #define BUFF_SIZE 256
 #define COMMAND_SIZE 4
-#define EXIT_FAILURE 1
+#define exit_shell_FAILURE 1
 #define HOME "/home/soren"
 #define BUFFERSIZE 256
 
@@ -96,7 +96,7 @@ void pwd()
 
     print_line("getcwd() error", "\0", 2);
     perror("getcwd() error");
-    exit(1);
+    exit_shell(1);
   }
 
   else
@@ -305,7 +305,7 @@ void runprocess(char **arg_buff, int isBackGround)
   if (pid < 0)
   {
     perror("Error");
-    // exit(EXIT_FAILURE);
+    // exit_shell(exit_shell_FAILURE);
   }
 
   else if (pid == 0)
@@ -315,7 +315,7 @@ void runprocess(char **arg_buff, int isBackGround)
     if (cmd_pid < 0)
     {
       perror("Command not found");
-      exit(EXIT_FAILURE);
+      exit_shell(exit_shell_FAILURE);
     }
     if (isBackGround != 1)
     {
@@ -434,10 +434,10 @@ void piping(char *command)
       // int ret = execve(pipe_args[j], pipe_args, NULL);
 
       // runprocess(arg_buff,0,&status);
-      exit(2);
+      exit_shell(2);
       // get_args(input_buff, arg_buff, BUFF_SIZE);
       // execute_com(pipe_args[j]);
-      // exit(2);
+      // exit_shell(2);
     }
   }
 }

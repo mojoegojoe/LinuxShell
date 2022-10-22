@@ -3,7 +3,7 @@
 
 #include "str_functions.h"
 
-void echo(char *command);
+void echo(char **command);
 
 
 #endif

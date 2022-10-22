@@ -1,10 +1,9 @@
 #ifndef SHELL_H
 #define SHELL_H
-#include <stdio.h>
-#include <stdlib.h>
 #include "common.h"
 #include "run_proc.h"
 #include "piping.h"
+#include "pwd.h"
 #include "built_in_handler.h"
 #include "input.h"
 #include "output.h"

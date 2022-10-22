@@ -1,23 +1,15 @@
 #include "redirection.h"
 
-int check_redirection(char *command)
-{
-    int out = str_contains(command, BUFF_SIZE, ">", 1);
-    int in = str_contains(command, BUFF_SIZE, "<", 1);
-    int append = str_contains(command, BUFF_SIZE, ">>", 2);
+/*
+Changes the fd based on the command, and runs the
+process handling all io redirection functionality
 
-    if ((out > 0) && (in > 0))
-        return 3;
+Working commands:
+Input < and output > redirection with overwrites
+Output >> redirection with append
+Error output 2> redirection
 
-    else if ((out > 0) || (append > 0))
-        return 2;
-
-    else if (in > 0)
-        return 1;
-
-    else
-        return 0;
-}
+ */
 void exec_ioredir(char **arg_buff, char **command_buff, int bckgrnd_flag)
 {
     int fd, saved;

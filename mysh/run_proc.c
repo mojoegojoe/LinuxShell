@@ -1,7 +1,5 @@
 #include "run_proc.h"
 
-
-
 void runprocess(char **arg_buff, int isBackGround)
 {
   if (check_for_built_in(arg_buff))

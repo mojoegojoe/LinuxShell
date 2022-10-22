@@ -3,13 +3,10 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-
+#include "common.h"
+#include "output.h"
 /* STRING MANIPULATION */
+int str_contains(char *string, int str_len, char *toFind, int f_len);
 char *str_tok(char *str, const char *delim);
 char *strcpy(char *destination, const char *source);
 int str_cpy(char *BUFFER, char *SRC, char *delim);

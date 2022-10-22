@@ -1,6 +1,40 @@
 #include "str_functions.h"
 
 
+int str_contains(char *string, int str_len, char *toFind, int f_len)
+{
+  int slen = str_len;
+  int tFlen = f_len;
+  int found = 0;
+
+  if (slen >= tFlen)
+  {
+    for (int s = 0, t = 0; s < slen; s++)
+    {
+      do
+      {
+
+        if (string[s] == toFind[t])
+        {
+          if (++found == tFlen)
+            return 1;
+          s++;
+          t++;
+        }
+        else
+        {
+          s -= found;
+          found = 0;
+          t = 0;
+        }
+
+      } while (found);
+    }
+    return 0;
+  }
+  else
+    return -1;
+}
 
 char *str_tok(char *str, const char *delim)
 {

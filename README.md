@@ -21,6 +21,21 @@ The mysh program provides a subset of the functionality provided by common Linux
   We also made some fun signals like Ctrl + C to end a current proccess, continue, pause and kill process commands.\
 
 # File/Dependency Tree
+|   	|   	|   	|   	|   	|
+|---	|---	|---	|---	|---	|
+|   LICENSE 	|   	|   	|   	|   	|
+|   README.md	|   	|   	|   	|   	|
+|   mysh	| MakeFile	|   	|   	|   	|
+|   	|  shell.c 	|   	|   	|   	|
+|   	|   	|  commmon.c 	|   	|   	|
+|   	|   	| run-proc.c 	|   	|   	|
+|   	|   	|  piping.c 	|   	|   	|
+|   	|   	|  built_in_handler.c 	|   	|   	|
+|   	|   	|  input.c 	|   	|   	|
+|   	|   	|  output.c 	|   	|   	|
+
+
+
 | | |
 |:--------:|:-----------:|:--------------------------:|
 | LICENSE | | |

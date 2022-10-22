@@ -1,4 +1,6 @@
 #include "pwd.h"
+
+/*Output the processes current parent work directory as an absolute path*/
 void pwd()
 {
   char PWD[BUFF_SIZE];

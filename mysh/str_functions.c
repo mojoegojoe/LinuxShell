@@ -173,7 +173,6 @@ void clear_buffer(char buff[], int buff_size, int index)
 }
 /*
 copies content of buff into buff2 starting at an index
-
  */
 void copy_starting(char **buff, char **buff2, int index)
 {

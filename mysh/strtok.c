@@ -4,8 +4,9 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/stat.h>
+#include <dirent.h>
 #include <fcntl.h>
-
+#include <errno.h>
 /* SHELL */
 void shell();
 void execute_command(char *input_buff);
@@ -14,7 +15,7 @@ void execute_command(char *input_buff);
 int check_for_built_in(char **args);
 void handle_builtin_functions(char **input);
 void echo(char *command);
-void ls(char **args);
+int ls(char **args);
 void pwd();
 int cd(char **args);
 /* PROC FUNCTIONS */
@@ -135,7 +136,42 @@ int cd(char **args)
   }
   return 1;
 }
-
+int ls(char **args)
+{
+  int NO_FILE_OR_DIR = 2;
+  struct dirent *d;
+  DIR *dh = opendir(args[1]);
+  if(args[1] == NULL)
+    {
+      print_line("Exepected argument to \"ls\"\n\0", "\0", 2);
+    }
+  else
+    {     
+      if (!dh)
+	{
+	  if(errno = NO_FILE_OR_DIR)
+	    {
+	      print_line("Directory doesn't exist\n\0", "\0", 2);
+	    }
+	  else
+	    {
+	      print_line("Unable to read Directory\n\0", "\0", 2);
+	    }
+	  print_line("Invaid argument to \"ls\"\n\0", "\0", 2);
+	  return 0;
+	}
+      else
+	{
+	  while((d = readdir(dh)) != 0)
+	    {
+	      printf("%s ", d->d_name);
+	      if(0){
+		printf("/n");
+	      };
+	    }
+	}
+    }
+}
 int check_for_built_in(char **args)
 {
   if ((strcmp(args[0], "pwd") == 0) || (strcmp(args[0], "cd") == 0) || (strcmp(args[0], "echo") == 0))
@@ -148,7 +184,7 @@ int check_for_built_in(char **args)
 void handle_builtin_functions(char **input)
 {
   char *command = str_tok(input[0], " \n\t\r");
-  printf("\n%s\n",command);
+  //  printf("\n%s\n",command);
   if (strcmp(command, "pwd") == 0) {
     pwd();
   }
@@ -162,7 +198,10 @@ void handle_builtin_functions(char **input)
       printf("%s",input[i+1]);
     }
     echo(input[1]);
+  } else if (strcmp(command, "ls") == 0) {
+    ls(input);
   }
+  
 }
 
 int str_contains(char *string, int str_len, char *toFind, int f_len)

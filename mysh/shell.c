@@ -31,7 +31,7 @@ void execute_command(char *input_buff)
   char *input = strcpy(input_copy, input_buff);
   // printf("copied cmd %s",input_copy);
   //  printf("ptr to cmd %s",input);
-  char *commands[] = {"|", "<", ">", "&"};
+  char *commands[] = {"|", "<", ">",">>","2>","&"};
   char *arg_buff[BUFF_SIZE];
   char *command_buff[BUFF_SIZE];
 
@@ -46,7 +46,7 @@ void execute_command(char *input_buff)
   get_args(input_copy, arg_buff, BUFF_SIZE);
   bckgrnd_flag = bckgrnd_check(arg_buff);
   command = command_handler(commands, COMMAND_SIZE, arg_buff, BUFF_SIZE, command_buff);
-
+  printf("first command: %s\n", command_buff[0]);
   if (check_piping(input_buff))
   {
     // printf("\n %s stuff \n", input_buff);
@@ -54,7 +54,7 @@ void execute_command(char *input_buff)
     // fork_pipes(command);
     return;
   }
-  else if (check_redirection(input_buff))
+  else if(command == 2)//check_redirection(input_buff))
   {
     exec_ioredir(arg_buff, command_buff, bckgrnd_flag);
   }
@@ -127,7 +127,8 @@ int command_handler(char **commands, int commands_size, char **arg_buffer, int b
         {
           status = 1;
         }
-        else if (strcmp(commands[j], "<") == 0 || strcmp(commands[j], ">") == 0)
+        else if (strcmp(commands[j], "<") == 0 || strcmp(commands[j], ">") == 0
+		 || strcmp(commands[j], ">>") == 0 || strcmp(commands[j], "2>") == 0)
         {
           status = 2;
         }

@@ -2,7 +2,7 @@
 #define COMMON_H
 
 #define BUFF_SIZE 256
-#define COMMAND_SIZE 4
+#define COMMAND_SIZE 6
 #define EXIT_FAILURE 1
 #define HOME "/home/"
 #define BUFFERSIZE 256

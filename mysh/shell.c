@@ -29,8 +29,6 @@ void execute_command(char *input_buff)
 {
     char input_copy[BUFF_SIZE];
     char *input = strcpy(input_copy, input_buff);
-    printf("copied cmd %s",input_copy);
-    //  printf("ptr to cmd %s",input);
     char *commands[] = {"|", "<", ">", ">>", "2>", "&"};
     char *arg_buff[BUFF_SIZE];
     char *command_buff[BUFF_SIZE];
@@ -46,7 +44,7 @@ void execute_command(char *input_buff)
   get_args(input_copy, arg_buff, BUFF_SIZE);
   bckgrnd_flag = bckgrnd_check(arg_buff);
   command = command_handler(commands, COMMAND_SIZE, arg_buff, BUFF_SIZE, command_buff);
-  printf("first command: %s\n", command_buff[0]);
+ 
   if (check_piping(input_buff))
   {
     // printf("\n %s stuff \n", input_buff);

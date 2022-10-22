@@ -10,6 +10,13 @@ void shell()
         {
             execute_command(input_buff);
             clear_buffer(input_buff, BUFF_SIZE, 0);
+        } else {
+            print_line("Error reading input from user\n\0","\0",2);
+            print_line("Probable causes for error\n\0","\0",2);
+            print_line("1. User hit enter without providing a command to the shell\n\0","\0",2);
+            print_line("2. User used a tab or space as first character (Try providing a command)\n\0","\0",2);
+            print_line("Try providing a command\n\0","\0",2);
+
         }
     } while (1);
 }

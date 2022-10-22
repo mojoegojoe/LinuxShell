@@ -36,6 +36,11 @@ int str_contains(char *string, int str_len, char *toFind, int f_len)
     return -1;
 }
 
+
+/*
+works the same way as the standard
+strtok function
+*/
 char *str_tok(char *str, const char *delim)
 {
   char *spanp;
@@ -154,6 +159,11 @@ int strcmp(char *str1, char *str2)
   return *(unsigned char *)str1 - *(unsigned char *)str2;
 }
 
+
+/*
+Given an index, sets all pointers in given buffer
+to NULL at and after array location index
+*/
 void clear_rest(char **buff, int buff_size, int index)
 {
   for (int i = index; i < buff_size; i++)
@@ -163,6 +173,9 @@ void clear_rest(char **buff, int buff_size, int index)
   return;
 }
 
+/*
+Sets all values in buffer starting and including index
+*/
 void clear_buffer(char buff[], int buff_size, int index)
 {
   for (int i = index; i < buff_size; i++)
@@ -171,10 +184,11 @@ void clear_buffer(char buff[], int buff_size, int index)
   }
   return;
 }
+
 /*
 copies content of buff into buff2 starting at an index
 
- */
+*/
 void copy_starting(char **buff, char **buff2, int index)
 {
 

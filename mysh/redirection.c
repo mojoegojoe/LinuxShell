@@ -2,13 +2,16 @@
 
 int check_redirection(char *command)
 {
-  unsigned char out = str_contains(command, BUFF_SIZE, ">", 1);
-  unsigned char in = str_contains(command, BUFF_SIZE, "<", 1);
+  int out = str_contains(command, BUFF_SIZE, ">", 1);
+  int in = str_contains(command, BUFF_SIZE, "<", 1);
+  int append = str_contains(command, BUFF_SIZE, ">>", 2);
+
+
 
   if ((out > 0) && (in > 0))
     return 3;
 
-  else if (out > 0)
+  else if ((out > 0) || (append > 0))
     return 2;
 
   else if (in > 0)
@@ -36,7 +39,7 @@ void exec_ioredir(char **arg_buff, char **command_buff, int bckgrnd_flag)
     if(fd == -1)
     {
       perror("File failed to open\n");
-      exit(EXIT_FAILURE);
+      exit_shell(EXIT_FAILURE);
     }
     dup2(fd, 1);
     close(fd);
@@ -54,7 +57,7 @@ void exec_ioredir(char **arg_buff, char **command_buff, int bckgrnd_flag)
     if(fd == -1)
     {
       perror("File failed to open\n");
-      exit(EXIT_FAILURE);
+      exit_shell(EXIT_FAILURE);
     }
 
     dup2(fd, 0);
@@ -71,7 +74,7 @@ void exec_ioredir(char **arg_buff, char **command_buff, int bckgrnd_flag)
     if(fd == -1)
     {
       perror("File failed to open\n");
-      exit(EXIT_FAILURE);
+      exit_shell(EXIT_FAILURE);
     }
     dup2(fd, 2);
     close(fd);

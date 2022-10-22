@@ -28,12 +28,8 @@ char **pipe_elements(char *input)
 }
 void piping(char *command)
 {
-  // printf("\n passed command \n%s\n", command);
-
   int status;
   char **pipe_args = pipe_elements(command);
-  // printf("%s\n",pipe_args[0]);
-  // printf("%s\n",pipe_args[1]);
   int pipes[2], fd = 0;
   pid_t proc;
 
@@ -42,30 +38,31 @@ void piping(char *command)
     // printf("%d\n", j);
 
     // printf("%s\n",pipe_args);
-    pipe(pipes);
-    proc = fork();
+    if (pipe(pipes)) {
+        proc = fork();
 
-    if (proc < 0)
-      perror("");
+        if (proc < 0)
+        perror("");
 
-    else if (proc > 0)
-    {
-      wait(NULL);
-      close(pipes[1]);
-      fd = pipes[0];
-    }
+        else if (proc > 0)
+        {
+        wait(NULL);
+        close(pipes[1]);
+        fd = pipes[0];
+        }
 
-    else if (proc == 0)
-    {
+        else if (proc == 0)
+        {
 
-      dup2(fd, 0);
+        dup2(fd, 0);
 
-      if (pipe_args[j + 1] != NULL)
-        dup2(pipes[1], 1);
+        if (pipe_args[j + 1] != NULL)
+            dup2(pipes[1], 1);
 
-      close(pipes[0]);
-      execute_command(pipe_args[j]);
-      exit(2);
+        close(pipes[0]);
+        execute_command(pipe_args[j]);
+        exit_shell(2);
+        }
     }
   }
 }

@@ -12,17 +12,18 @@ void runprocess(char **arg_buff, int isBackGround)
   if (pid < 0)
   {
     perror("Error");
-    // exit(EXIT_FAILURE);
+    // exit_shell(exit_shell_FAILURE);
   }
 
   else if (pid == 0)
   {
     // setpgid(0, 0);
+
     pid_t cmd_pid = execve(arg_buff[0], arg_buff, NULL);
     if (cmd_pid < 0)
     {
       perror("Command not found");
-      exit(EXIT_FAILURE);
+      exit_shell(EXIT_FAILURE);
     }
   }
   if (isBackGround != 0)

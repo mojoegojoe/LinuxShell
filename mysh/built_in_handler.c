@@ -2,7 +2,7 @@
 
 int check_for_built_in(char **args)
 {
-  if ((strcmp(args[0], "pwd") == 0) || (strcmp(args[0], "cd") == 0) || (strcmp(args[0], "echo") == 0))
+  if ((strcmp(args[0], "pwd") == 0) || (strcmp(args[0], "cd") == 0) || (strcmp(args[0], "echo") == 0) || (strcmp(args[0], "exit") == 0))
   {
       //printf("\n%s\n\n\n\n",args[0]);
     return 1;
@@ -26,5 +26,11 @@ void handle_builtin_functions(char **input)
     //   printf("%s",input[i+1]);
     // }
     echo(input[1]);
+  } else if (strcmp(command, "exit") == 0) {
+    // printf("%s\n",input[1]);
+    // for (int i = 0; input[i+1] != NULL; i++) {
+    //   printf("%s",input[i+1]);
+    // }
+    exit_shell(EXIT_SUCCESS);
   }
 }

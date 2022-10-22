@@ -7,7 +7,8 @@ void pwd()
 
     print_line("getcwd() error", "\0", 2);
     perror("getcwd() error");
-    exit(1);
+    exit_shell(EXIT_FAILURE);
+    //exit_shell(1);
   }
 
   else

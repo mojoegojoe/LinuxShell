@@ -21,39 +21,40 @@ The mysh program provides a subset of the functionality provided by common Linux
   We also made some fun signals like Ctrl + C to end a current proccess, continue, pause and kill process commands.\
 
 # File/Dependency Tree
-|------------------------------------------|
-| LICENSE
-| README.md
-| mysh ------| MakeFile
-|--------------|shell.c 
-|----------------| common.c
-|~~~~~~~~~~~~~~~~~~ stdio.h |
-|~~~~~~~~~~~~~~~~~~ stdlib  | - { clears up known bug within echo function. }
-|~~~~~~~~~~~~~~~~~~ unistd.h
-|~~~~~~~~~~~~~~~~~~ sys/types.h
-|~~~~~~~~~~~~~~~~~~ sys/wait.h
-|~~~~~~~~~~~~~~~~~~ sys/stat.h
-|~~~~~~~~~~~~~~~~~~ fcntl.h
-|----------------| run-proc.c
-|~~~~~~~~~~~~~~~~~~ common.h
-|~~~~~~~~~~~~~~~~~~ str_functions.h
-|~~~~~~~~~~~~~~~~~~ built_in_handler.h
-|~~~~~~~~~~~~~~~~~~ redirection.h
-|----------------| piping.c
-|~~~~~~~~~~~~~~~~~~ run_proc.h
-|~~~~~~~~~~~~~~~~~~ str_functions.h
-|~~~~~~~~~~~~~~~~~~ shell.h
-|----------------| built_in_handler.c
-|~~~~~~~~~~~~~~~~~~ common.h
-|~~~~~~~~~~~~~~~~~~ str_functions.h
-|~~~~~~~~~~~~~~~~~~ pwd.h
-|~~~~~~~~~~~~~~~~~~ cd.h
-|~~~~~~~~~~~~~~~~~~ echo.h
-|----------------| input.c
-|~~~~~~~~~~~~~~~~~~ common.h
-|----------------| ouput.c
-|~~~~~~~~~~~~~~~~~~ common.h
-|
+| | |
+|:--------:|:-----------:|:--------------------------:|
+| LICENSE | | |
+| README.md| | |
+| mysh ------| MakeFile | |
+|--------------|shell.c | |
+|----------------| common.c | |
+|~~~~~~~~~~~~~~~~~~ stdio.h | | 
+|~~~~~~~~~~~~~~~~~~ stdlib  | - { clears up known bug within echo function. } |
+|~~~~~~~~~~~~~~~~~~ unistd.h | |
+|~~~~~~~~~~~~~~~~~~ sys/types.h | |
+|~~~~~~~~~~~~~~~~~~ sys/wait.h | |
+|~~~~~~~~~~~~~~~~~~ sys/stat.h | |
+|~~~~~~~~~~~~~~~~~~ fcntl.h | |
+|----------------| run-proc.c | |
+|~~~~~~~~~~~~~~~~~~ common.h | |
+|~~~~~~~~~~~~~~~~~~ str_functions.h | |
+|~~~~~~~~~~~~~~~~~~ built_in_handler.h | |
+|~~~~~~~~~~~~~~~~~~ redirection.h | |
+|----------------| piping.c | |
+|~~~~~~~~~~~~~~~~~~ run_proc.h | |
+|~~~~~~~~~~~~~~~~~~ str_functions.h | |
+|~~~~~~~~~~~~~~~~~~ shell.h | |
+|----------------| built_in_handler.c | |
+|~~~~~~~~~~~~~~~~~~ common.h | |
+|~~~~~~~~~~~~~~~~~~ str_functions.h | |
+|~~~~~~~~~~~~~~~~~~ pwd.h | |
+|~~~~~~~~~~~~~~~~~~ cd.h | |
+|~~~~~~~~~~~~~~~~~~ echo.h | |
+|----------------| input.c | |
+|~~~~~~~~~~~~~~~~~~ common.h | |
+|----------------| ouput.c | |
+|~~~~~~~~~~~~~~~~~~ common.h | |
+|:-:|:-:|:-:|
 |             | built_in_handler.h
 |             | cd.h
 |             | common.h

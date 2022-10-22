@@ -27,6 +27,11 @@ void shell()
         }
     } while (1);
 }
+/*
+Given a string array, finds the background command
+"&" and returns 0 if found. If not found it gives a
+number above 0
+*/
 
 int bckgrnd_check(char **arg_buff)
 {

@@ -25,7 +25,7 @@ void handle_builtin_functions(char **input)
     // for (int i = 0; input[i+1] != NULL; i++) {
     //   printf("%s",input[i+1]);
     // }
-    echo(input[1]);
+    echo(input);
   } else if (strcmp(command, "exit") == 0) {
     // printf("%s\n",input[1]);
     // for (int i = 0; input[i+1] != NULL; i++) {

@@ -1,8 +1,6 @@
 #ifndef STR_FUNCTIONS_H
 #define STR_FUNCTIONS_H
 
-#include <stdio.h>
-#include <stdlib.h>
 #include "common.h"
 #include "output.h"
 /* STRING MANIPULATION */

@@ -1,4 +1,11 @@
 #include "pwd.h"
+/*
+  @function pwd (print currnt dir)
+  @method   if the current working dir is available
+               print to user else flag err.	       
+  @input    N/A
+  @output   N/A
+ */
 void pwd()
 {
   char PWD[BUFF_SIZE];
@@ -6,7 +13,6 @@ void pwd()
   {
     print_line("getcwd() error\0", "\0", 2);
     exit_shell(EXIT_FAILURE);
-    //exit_shell(1);
   }
 
   else

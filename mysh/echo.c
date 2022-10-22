@@ -1,5 +1,8 @@
 #include "echo.h"
-
+/*
+  @function echo
+  @method for each command given by the user print back to them
+ */
 void echo(char **command)
 {
   for (int i = 1; command[i] != NULL; i++) {

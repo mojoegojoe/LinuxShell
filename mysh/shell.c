@@ -59,7 +59,7 @@ void execute_command(char *input_buff)
     piping(input_buff);
     return;
   }
-  else if(command == 2)//check_redirection(input_buff))
+  else if(command == 2)
   {
     exec_ioredir(arg_buff, command_buff, bckgrnd_flag);
   }

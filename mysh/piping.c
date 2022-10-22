@@ -65,7 +65,7 @@ void piping(char *command)
 
   for (int j = 0; pipe_args[j] != NULL; j++)
   {
-    if (pipe(pipes)) {
+    if (pipe(pipes) == 0) {
         proc = fork();
 
         if (proc < 0)

@@ -6,7 +6,6 @@
 #define EXIT_FAILURE 1
 #define HOME "/home/"
 #define BUFFERSIZE 256
-#include <stdio.h>
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>

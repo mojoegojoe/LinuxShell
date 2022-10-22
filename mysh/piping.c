@@ -21,7 +21,6 @@ char **pipe_elements(char *input)
   {
     pipe_args[oof++] = p;
     p = str_tok(NULL, "|");
-    // printf("%s", p);
   }
 
   return pipe_args;
@@ -35,14 +34,12 @@ void piping(char *command)
 
   for (int j = 0; pipe_args[j] != NULL; j++)
   {
-    // printf("%d\n", j);
-
-    // printf("%s\n",pipe_args);
     if (pipe(pipes)) {
         proc = fork();
 
         if (proc < 0)
-        perror("");
+        print_line("Fork Failed:\n\0", "\0", 2);
+    
 
         else if (proc > 0)
         {
@@ -63,6 +60,9 @@ void piping(char *command)
         execute_command(pipe_args[j]);
         exit_shell(2);
         }
+    }
+    else {
+        print_line("Failed to establish pipe\n\0", "\0", 2);
     }
   }
 }

@@ -2,7 +2,7 @@
 
 void shell()
 {
-    // pwd();
+    pwd();
     char input_buff[BUFF_SIZE];
     do
     {
@@ -32,13 +32,7 @@ void execute_command(char *input_buff)
     char *commands[] = {"|", "<", ">", ">>", "2>", "&"};
     char *arg_buff[BUFF_SIZE];
     char *command_buff[BUFF_SIZE];
-
-    // pid_t pid;
-    // int status;
-
     int command;
-    // int running = 1;
-    // int saved;
     int bckgrnd_flag = 0;
 
   get_args(input_copy, arg_buff, BUFF_SIZE);
@@ -47,9 +41,7 @@ void execute_command(char *input_buff)
  
   if (check_piping(input_buff))
   {
-    // printf("\n %s stuff \n", input_buff);
     piping(input_buff);
-    // fork_pipes(command);
     return;
   }
   else if(command == 2)//check_redirection(input_buff))

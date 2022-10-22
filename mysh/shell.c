@@ -46,7 +46,6 @@ void execute_command(char *input_buff)
   get_args(input_copy, arg_buff, BUFF_SIZE);
   bckgrnd_flag = bckgrnd_check(arg_buff);
   command = command_handler(commands, COMMAND_SIZE, arg_buff, BUFF_SIZE, command_buff);
-  printf("first command: %s\n", command_buff[0]);
   if (check_piping(input_buff))
   {
     // printf("\n %s stuff \n", input_buff);
@@ -54,7 +53,7 @@ void execute_command(char *input_buff)
     // fork_pipes(command);
     return;
   }
-  else if(command == 2)//check_redirection(input_buff))
+  else if(command == 2)
   {
     exec_ioredir(arg_buff, command_buff, bckgrnd_flag);
   }

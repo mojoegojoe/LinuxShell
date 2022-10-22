@@ -1,10 +1,11 @@
 #include "shell.h"
-/*************
-/   @function shell
-/   @method   
-/
-/
-****************/
+/*
+   @function shell
+   @method   inf loop to take user input via custom functions
+              and then execue said input 
+	      otherwise we wll print relevent error codes.
+	      
+*/
 void shell()
 {
     pwd();
@@ -25,6 +26,7 @@ void shell()
         }
     } while (1);
 }
+
 int bckgrnd_check(char **arg_buff)
 {
 
@@ -36,7 +38,6 @@ int bckgrnd_check(char **arg_buff)
     }
     return strcmp(arg_buff[i - 1], "&");
 }
-
 void execute_command(char *input_buff)
 {
     char input_copy[BUFF_SIZE];
@@ -148,6 +149,7 @@ int command_handler(char **commands, int commands_size, char **arg_buffer, int b
     return status;
 }
 
+/* base c main loop to start prg */
 int main()
 {
 

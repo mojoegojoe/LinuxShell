@@ -23,7 +23,7 @@ TODO:
 int read_input(char *buffer, int buffer_size)
 {
   int status;
-
+  print_line("$: \0","\0",1);
   if (buffer == NULL)
   {
     status = 0;

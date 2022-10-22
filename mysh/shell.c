@@ -10,9 +10,12 @@
 void shell()
 {
     pwd();
+    print_line("____ WELCOME TO THE SHELL ______\n\0","\0",1);
+    print_line("\n\nEVERYTHING IS FINE\n\n\n\0","\0",1);
     char input_buff[BUFF_SIZE];
+    
     do
-    {
+      {
         if (read_input(input_buff, BUFF_SIZE))
         {
             execute_command(input_buff);

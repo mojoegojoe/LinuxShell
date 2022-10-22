@@ -24,13 +24,13 @@ void runprocess(char **arg_buff, int isBackGround)
       perror("Command not found");
       exit(EXIT_FAILURE);
     }
-    if (isBackGround != 1)
-    {
-      // printf("waiting\n");
+  }
+  if (isBackGround != 0)
+  {
+    // printf("waiting\n");
       waitpid(pid, &status, 0);
-    }
+  }
     // else (
     //   //getpid()
     // )
-  }
 }

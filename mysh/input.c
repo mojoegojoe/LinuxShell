@@ -17,12 +17,16 @@ int read_input(char *buffer, int buffer_size)
 
   if (buffer == NULL)
   {
-    status = -1;
+    status = 0;
     return status;
   }
   else
   {
     status = read(0, buffer, buffer_size);
+    if(buffer[0] == ' ' || buffer[0] == '\n' || buffer[0] == '\0')
+      {
+	status = 0;
+      };
   }
   return status;
 }

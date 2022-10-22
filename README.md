@@ -27,61 +27,26 @@ The mysh program provides a subset of the functionality provided by common Linux
 |   README.md	|   	|   	|   	|   	|
 |   mysh	| MakeFile	|   	|   	|   	|
 |   	|  shell.c 	|   	|   	|   	|
-|   	|   	|  commmon.c 	|   	|   	|
-|   	|   	| run-proc.c 	|   	|   	|
-|   	|   	|  piping.c 	|   	|   	|
-|   	|   	|  built_in_handler.c 	|   	|   	|
-|   	|   	|  input.c 	|   	|   	|
-|   	|   	|  output.c 	|   	|   	|
-
-
-
-| | |
-|:--------:|:-----------:|:--------------------------:|
-| LICENSE | | |
-| README.md| | |
-| mysh ------| MakeFile | |
-|--------------|shell.c | |
-|----------------| common.c | |
-|~~~~~~~~~~~~~~~~~~ stdio.h | | 
-|~~~~~~~~~~~~~~~~~~ stdlib  | - { clears up known bug within echo function. } |
-|~~~~~~~~~~~~~~~~~~ unistd.h | |
-|~~~~~~~~~~~~~~~~~~ sys/types.h | |
-|~~~~~~~~~~~~~~~~~~ sys/wait.h | |
-|~~~~~~~~~~~~~~~~~~ sys/stat.h | |
-|~~~~~~~~~~~~~~~~~~ fcntl.h | |
-|----------------| run-proc.c | |
-|~~~~~~~~~~~~~~~~~~ common.h | |
-|~~~~~~~~~~~~~~~~~~ str_functions.h | |
-|~~~~~~~~~~~~~~~~~~ built_in_handler.h | |
-|~~~~~~~~~~~~~~~~~~ redirection.h | |
-|----------------| piping.c | |
-|~~~~~~~~~~~~~~~~~~ run_proc.h | |
-|~~~~~~~~~~~~~~~~~~ str_functions.h | |
-|~~~~~~~~~~~~~~~~~~ shell.h | |
-|----------------| built_in_handler.c | |
-|~~~~~~~~~~~~~~~~~~ common.h | |
-|~~~~~~~~~~~~~~~~~~ str_functions.h | |
-|~~~~~~~~~~~~~~~~~~ pwd.h | |
-|~~~~~~~~~~~~~~~~~~ cd.h | |
-|~~~~~~~~~~~~~~~~~~ echo.h | |
-|----------------| input.c | |
-|~~~~~~~~~~~~~~~~~~ common.h | |
-|----------------| ouput.c | |
-|~~~~~~~~~~~~~~~~~~ common.h | |
-|:-:|:-:|:-:|
-|             | built_in_handler.h
-|             | cd.h
-|             | common.h
-|             | echo.h
-|             | error.h
-|             | input.h
-|             | output.h
-|             | piping.h
-|             | pwd.h
-|             | redirection.h
-|             | run_proc.h
-|             | shell.h
-|             | str_functions.h
-|             | strtok.h
-|
+|   	|   	|  commmon.c 	| unistd.h sys/types.h sys/wait.h sys/stat.h fcntl.h	|   stdio.h stdlib 	|
+|   	|   	| run-proc.c 	| common.h str_functions.h built_in_handler.h redirection.h |   	|
+|   	|   	|  piping.c 	| run_proc.h str_functions.h shell.h 	|   	|
+|   	|   	|  built_in_handler.c 	| common.h str_functions.h pwd.h cd.h echo.h 	|   	|
+|   	|   	|  input.c 	| common.h  |   	|
+|   	|   	|  output.c 	| common.h 	|   	|
+|---  |---  |---  |---  |---  |
+|| | | ||
+|| built_in_handler.h| | | |
+|| cd.h| | | |
+|| common.h| | | |
+|| echo.h| | | |
+|| error.h| | | |
+|| input.h| | | |
+|| output.h| | | |
+|| piping.h| | | |
+|| pwd.h| | | |
+|| redirection.h| | | |
+|| run_proc.h| | | |
+|| shell.h| | | |
+|| str_functions.h| | | |
+|| strtok.h | | | | 
+|---  |---  |---  |---  |---  |

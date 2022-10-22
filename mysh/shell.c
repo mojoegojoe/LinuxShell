@@ -29,6 +29,9 @@ void execute_command(char *input_buff)
 {
     char input_copy[BUFF_SIZE];
     char *input = strcpy(input_copy, input_buff);
+    if (input == NULL) {
+        return;
+    }
     char *commands[] = {"|", "<", ">", ">>", "2>", "&"};
     char *arg_buff[BUFF_SIZE];
     char *command_buff[BUFF_SIZE];

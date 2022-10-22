@@ -1,7 +1,5 @@
 #ifndef SHELL_H
 #define SHELL_H
-#include <stdio.h>
-#include <stdlib.h>
 #include "common.h"
 #include "run_proc.h"
 #include "piping.h"

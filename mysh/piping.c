@@ -27,7 +27,6 @@ char **pipe_elements(char *input)
 }
 void piping(char *command)
 {
-  int status;
   char **pipe_args = pipe_elements(command);
   int pipes[2], fd = 0;
   pid_t proc;
